@@ -12,7 +12,7 @@ app.use(cors());
 
 const PORT = 3690;
 
-app.get("/", (req, res) => {
+app.get("./", (req, res) => {
   res.send("Api is running");
 });
 
