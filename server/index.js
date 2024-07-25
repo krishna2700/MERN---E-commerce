@@ -2,13 +2,16 @@ import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
 import connectRoDatabase from "./db.js";
+// Routes
+import productRoutes from "./routes/products.js";
 
 dotenv.config();
-
 connectRoDatabase();
 const app = express();
 app.use(express.json());
 app.use(cors());
+
+app.use("/api/products", productRoutes);
 
 const PORT = 3690;
 
