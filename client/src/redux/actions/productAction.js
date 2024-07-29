@@ -1,7 +1,6 @@
 import axios from "axios";
 import {
   setError,
-  setFavoritesToggled,
   setLoading,
   setPagination,
   setProducts,

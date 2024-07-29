@@ -1,18 +1,18 @@
 import { Box, Center, Wrap, WrapItem } from "@chakra-ui/react";
 import React from "react";
 import ProductCard from "../components/ProductCard";
-import axios from "axios";
+import { useSelector, useDispatch } from "react-redux";
+import { getProducts } from "../redux/actions/productAction";
 
 const ProductScreen = () => {
-  const [products, setProducts] = React.useState([]);
+  const dispatch = useDispatch();
+  const { loading, error, products, pagination } = useSelector(
+    (state) => state.product
+  );
 
   React.useEffect(() => {
-    axios
-      .get("api/products")
-      .then((res) => setProducts(res.data.products))
-      .catch((err) => console.log(err));
+    dispatch(getProducts());
   }, []);
-
   return (
     <>
       {products.length > 1 && (
