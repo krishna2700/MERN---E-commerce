@@ -13,7 +13,7 @@ import { BiExpand } from "react-icons/bi";
 const ProductCard = ({ product, loading }) => {
   console.log(product);
   return (
-    <Skeleton isLoaded={!loading} _hover={{ size: 1.5 }}>
+    <Skeleton isLoaded={true} _hover={{ size: 1.5 }}>
       <Box
         _hover={{ transform: "scale(1.1)", transitionDuration: "0.5s" }}
         borderWidth="1px"
@@ -21,7 +21,11 @@ const ProductCard = ({ product, loading }) => {
         p="4"
         shadow="md"
       >
-        <Image />
+        <Image
+          src={product.images[0]}
+          fallback="https://via.placeholder.com/150"
+          alt={product.name}
+        />
         {product.stock < 5 ? (
           <Badge colorScheme="yellow">Only {product.stock} left in stock</Badge>
         ) : product.stick < 1 ? (

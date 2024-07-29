@@ -26,7 +26,7 @@ const ProductScreen = () => {
             {products.map((product) => (
               <WrapItem key={product._id}>
                 <Center w="250px" h="450px">
-                  <ProductCard product={product} loading={false} />
+                  <ProductCard product={product} loading={loading} />
                 </Center>
               </WrapItem>
             ))}
