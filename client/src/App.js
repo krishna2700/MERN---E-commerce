@@ -1,9 +1,10 @@
 import { ChakraProvider } from "@chakra-ui/react";
+import ProductScreen from "./screens/ProductScreen";
 
 function App() {
   return (
     <ChakraProvider>
-      <h1>Hello World</h1>
+      <ProductScreen />
     </ChakraProvider>
   );
 }
