@@ -3,7 +3,7 @@ import express from "express";
 import cors from "cors";
 import connectRoDatabase from "./db.js";
 // Routes
-import productRoutes from "./routes/products.js";
+import productRoutes from "./routes/productRoutes.js";
 
 dotenv.config();
 connectRoDatabase();
