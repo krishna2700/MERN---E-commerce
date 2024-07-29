@@ -11,8 +11,8 @@ const ProductScreen = () => {
   );
 
   React.useEffect(() => {
-    dispatch(getProducts());
-  }, []);
+    dispatch(getProducts(1));
+  }, [dispatch]);
   return (
     <>
       {products.length > 1 && (
