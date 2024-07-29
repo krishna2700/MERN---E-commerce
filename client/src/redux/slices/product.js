@@ -9,7 +9,7 @@ export const initialState = {
   favoritesToggled: true,
 };
 
-export const productSlice = createSlice({
+const productSlice = createSlice({
   name: "product",
   initialState,
   reducers: {
