@@ -6,6 +6,7 @@ import {
   setProducts,
   setFavoritesToggled,
   setFavorites,
+  setProduct,
 } from "../slices/product";
 
 export const getProducts = (page, favoritesToggled) => async (dispatch) => {
@@ -64,5 +65,23 @@ export const toggleFavorites = (toggle) => async (dispatch, getState) => {
   } else {
     dispatch(setFavoritesToggled(false));
     dispatch(getProducts(1));
+  }
+};
+
+export const getProduct = (id) => async (dispatch) => {
+  dispatch(setLoading(true));
+  try {
+    const { data } = await axios.get(`/api/products/${id}`);
+    dispatch(setProduct(data));
+  } catch (err) {
+    dispatch(
+      setError(
+        err.response && err.response.data.message
+          ? err.response.data.message
+          : err.message
+          ? err.message
+          : "An unexpected error has occurred"
+      )
+    );
   }
 };
