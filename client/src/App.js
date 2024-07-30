@@ -1,7 +1,9 @@
 import { ChakraProvider } from "@chakra-ui/react";
-import ProductScreen from "./screens/ProductScreen";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import Header from "./components/Header";
+import LandingScreen from "./screens/LandingScreen";
+import Product from "./screens/Product";
+import ProductScreen from "./screens/ProductScreen";
 
 function App() {
   return (
@@ -10,7 +12,9 @@ function App() {
         <Header />
         <main>
           <Routes>
-            <Route path="/" element={<ProductScreen />} />
+            <Route path="/" element={<LandingScreen />} />
+            <Route path="/products" element={<ProductScreen />} />
+            <Route path="/product/:id" element={<Product />} />
           </Routes>
         </main>
       </Router>
