@@ -1,13 +1,23 @@
-import { Box, Button, Center, Wrap, WrapItem } from "@chakra-ui/react";
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+  Box,
+  Button,
+  Center,
+  Wrap,
+  WrapItem,
+} from "@chakra-ui/react";
 import React from "react";
+import { MdArrowLeft, MdArrowRight } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import ProductCard from "../components/ProductCard";
 import { getProducts } from "../redux/actions/productAction";
-import { MdArrowLeft, MdArrowRight } from "react-icons/md";
 
 const ProductScreen = () => {
   const dispatch = useDispatch();
-  const { loading, error, products, pagination, favorites, favoritesToggled } =
+  const { loading, error, products, pagination, favoritesToggled } =
     useSelector((state) => state.product);
 
   React.useEffect(() => {
@@ -28,13 +38,21 @@ const ProductScreen = () => {
             minHeight="80vh"
             mx={{ base: "12", md: "20", lg: "32" }}
           >
-            {products.map((product) => (
-              <WrapItem key={product._id}>
-                <Center w="250px" h="450px">
-                  <ProductCard product={product} loading={loading} />
-                </Center>
-              </WrapItem>
-            ))}
+            {error ? (
+              <Alert status="error">
+                <AlertIcon />
+                <AlertTitle>We are Sorry!</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            ) : (
+              products.map((product) => (
+                <WrapItem key={product._id}>
+                  <Center w="250px" h="450px">
+                    <ProductCard product={product} loading={loading} />
+                  </Center>
+                </WrapItem>
+              ))
+            )}
           </Wrap>
           {!favoritesToggled && (
             <Wrap spacing="10px" justify="center" p="5">
