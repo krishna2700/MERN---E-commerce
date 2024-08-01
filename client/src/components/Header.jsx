@@ -1,24 +1,24 @@
-import React from "react";
 import {
-  IconButton,
   Box,
   Flex,
   HStack,
   Icon,
+  IconButton,
   Stack,
   Text,
   useColorModeValue as mode,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { BsPhoneFlip } from "react-icons/bs";
-import { Link as ReactLink } from "react-router-dom";
-import { MdOutlineFavoriteBorder, MdOutlineFavorite } from "react-icons/md";
-import { useSelector, useDispatch } from "react-redux";
-import NavLink from "./NavLink";
-import ColorModeToggle from "./ColorModeToggle";
 import { BiUserCheck } from "react-icons/bi";
+import { MdOutlineFavorite, MdOutlineFavoriteBorder } from "react-icons/md";
+import { useDispatch, useSelector } from "react-redux";
+import { Link as ReactLink } from "react-router-dom";
 import { toggleFavorites } from "../redux/actions/productAction";
+import ColorModeToggle from "./ColorModeToggle";
+import NavLink from "./NavLink";
+import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 
 const Links = [
   { name: "Products", route: "/products" },
@@ -41,10 +41,10 @@ const Header = () => {
           <IconButton
             bg="parent"
             size="md"
-            icon={isOpen ? onClose : onOpen}
             aria-label="Open Menu"
             display={{ md: "none" }}
-            onClick={onOpen}
+            onClick={isOpen ? onClose : onOpen}
+            icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
           />
         </Flex>
         <HStack spacing={8} alignItems={"center"}>
@@ -64,22 +64,52 @@ const Header = () => {
               </NavLink>
             ))}
             <ColorModeToggle />
+            {favoritesToggled ? (
+              <IconButton
+                icon={<MdOutlineFavorite size="20px" />}
+                onClick={() => dispatch(toggleFavorites(false))}
+                variant="ghost"
+              />
+            ) : (
+              <IconButton
+                icon={<MdOutlineFavoriteBorder size="20px" />}
+                onClick={() => dispatch(toggleFavorites(true))}
+                variant="ghost"
+              />
+            )}
           </HStack>
         </HStack>
+        <Flex alignItems={"center"}>
+          <BiUserCheck />
+        </Flex>
       </Flex>
-      {/* {favoritesToggled ? (
-        <IconButton
-          icon={<MdOutlineFavorite size="20px" />}
-          onClick={() => dispatch(toggleFavorites(false))}
-          variant="ghost"
-        />
-      ) : (
-        <IconButton
-          icon={<MdOutlineFavoriteBorder size="20px" />}
-          onClick={() => dispatch(toggleFavorites(true))}
-          variant="ghost"
-        />
-      )} */}
+      <Box display="flex">
+        {isOpen && (
+          <Box display={{ md: "none" }} pb="4">
+            <Stack as="nav" spacing={4}>
+              {Links.map((link) => (
+                <NavLink key={link.route} route={link.route}>
+                  <Text fontWeight={"medium"}>{link.name}</Text>
+                </NavLink>
+              ))}
+            </Stack>
+            {favoritesToggled ? (
+              <IconButton
+                icon={<MdOutlineFavorite size="20px" />}
+                onClick={() => dispatch(toggleFavorites(false))}
+                variant="ghost"
+              />
+            ) : (
+              <IconButton
+                icon={<MdOutlineFavoriteBorder size="20px" />}
+                onClick={() => dispatch(toggleFavorites(true))}
+                variant="ghost"
+              />
+            )}
+            <ColorModeToggle />
+          </Box>
+        )}
+      </Box>
     </Box>
   );
 };
