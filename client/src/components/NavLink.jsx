@@ -1,6 +1,6 @@
 import React from "react";
 import { IconButton } from "@chakra-ui/react";
-import { link as ReactLink } from "react-router-dom";
+import { Link as ReactLink } from "react-router-dom";
 
 const NavLink = ({ children, route }) => {
   return (
