@@ -15,14 +15,16 @@ import {
   addToFavorites,
   removeFromFavorites,
 } from "../redux/actions/productAction";
+import { Link as ReactLink } from "react-router-dom";
 
 const ProductCard = ({ product, loading }) => {
   const dispatch = useDispatch();
   const { favorites } = useSelector((state) => state.product);
+  const [isShown, setIsShown] = React.useState(false);
 
   console.log(product);
   return (
-    <Skeleton isLoaded={true} _hover={{ size: 1.5 }}>
+    <Skeleton isLoaded={true}>
       <Box
         _hover={{ transform: "scale(1.1)", transitionDuration: "0.5s" }}
         borderWidth="1px"
@@ -31,7 +33,9 @@ const ProductCard = ({ product, loading }) => {
         shadow="md"
       >
         <Image
-          src={product.images[0]}
+          onMouseEnter={() => setIsShown(true)}
+          onMouseLeave={() => setIsShown(false)}
+          src={product.images[isShown && product.images.length === 2 ? 1 : 0]}
           fallback="https://via.placeholder.com/150"
           alt={product.name}
         />
@@ -78,6 +82,8 @@ const ProductCard = ({ product, loading }) => {
           )}
           <IconButton
             icon={<BiExpand size={20} />}
+            as={ReactLink}
+            to={`/product/${product._id}`}
             colorScheme="cyan"
             size="sm"
           />
