@@ -165,6 +165,9 @@ const Product = () => {
                   <Stack width={"270px"}>
                     <Flex alignItems={"center"}>
                       <BiPackage size={"20px"} />
+                      <Text fontWeight={"md"} fontSize={"sm"} ml={"2"}>
+                        Free shipping
+                      </Text>
                     </Flex>
                     <Flex alignItems={"center"}>
                       <BiCheckShield size={"20px"} />
