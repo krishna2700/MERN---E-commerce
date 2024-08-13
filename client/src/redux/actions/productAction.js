@@ -1,12 +1,12 @@
 import axios from "axios";
 import {
   setError,
+  setFavorites,
+  setFavoritesToggled,
   setLoading,
   setPagination,
-  setProducts,
-  setFavoritesToggled,
-  setFavorites,
   setProduct,
+  setProducts,
 } from "../slices/product";
 
 export const getProducts = (page, favoritesToggled) => async (dispatch) => {
@@ -33,14 +33,17 @@ export const addToFavorites = (id) => async (dispatch, getState) => {
   const {
     product: { favorites },
   } = getState();
+
   const newFavorites = [...favorites, id];
   localStorage.setItem("favorites", JSON.stringify(newFavorites));
   dispatch(setFavorites(newFavorites));
 };
+
 export const removeFromFavorites = (id) => async (dispatch, getState) => {
   const {
     product: { favorites },
   } = getState();
+
   const newFavorites = favorites.filter((favoriteId) => favoriteId !== id);
   localStorage.setItem("favorites", JSON.stringify(newFavorites));
   dispatch(setFavorites(newFavorites));
@@ -50,11 +53,6 @@ export const toggleFavorites = (toggle) => async (dispatch, getState) => {
   const {
     product: { favorites, products },
   } = getState();
-
-  if (!Array.isArray(products)) {
-    dispatch(setError("Products data is not an array"));
-    return;
-  }
 
   if (toggle) {
     const filteredProducts = products.filter((product) =>

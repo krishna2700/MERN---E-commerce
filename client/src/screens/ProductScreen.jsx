@@ -1,26 +1,26 @@
 import {
   Alert,
-  AlertDescription,
-  AlertIcon,
   AlertTitle,
+  AlertIcon,
+  AlertDescription,
   Box,
   Button,
   Center,
   Wrap,
   WrapItem,
 } from "@chakra-ui/react";
-import React from "react";
-import { MdArrowLeft, MdArrowRight } from "react-icons/md";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ProductCard from "../components/ProductCard";
 import { getProducts } from "../redux/actions/productAction";
+import { ArrowLeftIcon, ArrowRightIcon } from "@chakra-ui/icons";
 
-const ProductScreen = () => {
+const ProductsScreen = () => {
   const dispatch = useDispatch();
   const { loading, error, products, pagination, favoritesToggled } =
     useSelector((state) => state.product);
 
-  React.useEffect(() => {
+  useEffect(() => {
     dispatch(getProducts(1));
   }, [dispatch]);
 
@@ -41,7 +41,7 @@ const ProductScreen = () => {
             {error ? (
               <Alert status="error">
                 <AlertIcon />
-                <AlertTitle>We are Sorry!</AlertTitle>
+                <AlertTitle>We are sorry!</AlertTitle>
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             ) : (
@@ -57,28 +57,29 @@ const ProductScreen = () => {
           {!favoritesToggled && (
             <Wrap spacing="10px" justify="center" p="5">
               <Button
+                colorScheme="cyan"
                 onClick={() => paginationButtonClick(1)}
-                colorScheme="cyan"
               >
-                <MdArrowLeft />
+                <ArrowLeftIcon />
               </Button>
-              {Array.from({ length: pagination.totalPages }, (_, i) => (
-                <Button
-                  key={i}
-                  onClick={() => paginationButtonClick(i + 1)}
-                  colorScheme={
-                    pagination.currentPage === i + 1 ? "cyan" : "gray"
-                  }
-                >
-                  {i + 1}
-                </Button>
-              ))}
-
+              {Array.from(Array(pagination.totalPages), (e, i) => {
+                return (
+                  <Button
+                    colorScheme={
+                      pagination.currentPage === i + 1 ? "cyan" : "gray"
+                    }
+                    key={i}
+                    onClick={() => paginationButtonClick(i + 1)}
+                  >
+                    {i + 1}
+                  </Button>
+                );
+              })}
               <Button
-                onClick={() => paginationButtonClick(pagination.totalPages)}
                 colorScheme="cyan"
+                onClick={() => paginationButtonClick(pagination.totalPages)}
               >
-                <MdArrowRight />
+                <ArrowRightIcon />
               </Button>
             </Wrap>
           )}
@@ -88,4 +89,4 @@ const ProductScreen = () => {
   );
 };
 
-export default ProductScreen;
+export default ProductsScreen;

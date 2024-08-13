@@ -1,11 +1,11 @@
 import axios from "axios";
 import {
-  cartItemRemoval,
-  clearCart,
-  setCartItems,
   setError,
   setLoading,
   setShippingCosts,
+  cartItemAdd,
+  cartItemRemoval,
+  clearCart,
 } from "../slices/cart";
 
 export const addCartItems = (id, qty) => async (dispatch) => {
@@ -23,16 +23,16 @@ export const addCartItems = (id, qty) => async (dispatch) => {
       qty,
       stripeId: data.stripeId,
     };
-    dispatch(setCartItems(itemToAdd));
-    dispatch(setCartItems({ product: data._id, qty }));
-  } catch (err) {
+
+    dispatch(cartItemAdd(itemToAdd));
+  } catch (error) {
     dispatch(
       setError(
-        err.response && err.response.data.message
-          ? err.response.data.message
-          : err.message
-          ? err.message
-          : "An unexpected error has occurred"
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message
+          ? error.message
+          : "An expected error has occured. Please try again later."
       )
     );
   }
@@ -41,18 +41,12 @@ export const addCartItems = (id, qty) => async (dispatch) => {
 export const removeCartItem = (id) => async (dispatch) => {
   dispatch(setLoading(true));
   dispatch(cartItemRemoval(id));
-  dispatch(clearCart());
-};
-
-export const clearCartItems = () => async (dispatch) => {
-  dispatch(clearCart());
-  dispatch(setLoading(true));
 };
 
 export const setShipping = (value) => async (dispatch) => {
   dispatch(setShippingCosts(value));
 };
 
-export const restCart = () => async (dispatch) => {
-  dispatch(clearCart());
+export const resetCart = () => (dispatch) => {
+  dispatch(clearCart);
 };

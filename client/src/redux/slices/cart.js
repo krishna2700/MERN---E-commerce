@@ -2,21 +2,15 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const calculateSubtotal = (cartState) => {
   let result = 0;
-  cartState.forEach((item) => {
-    result += item.qty * item.price;
-  });
+  cartState.map((item) => (result += item.qty * item.price));
   return result;
 };
 
 export const initialState = {
   loading: false,
   error: null,
-  cartItems: localStorage.getItem("cartItems")
-    ? JSON.parse(localStorage.getItem("cartItems"))
-    : [],
-  shipping: localStorage.getItem("shipping")
-    ? Number(localStorage.getItem("shipping"))
-    : 4.99,
+  cartItems: JSON.parse(localStorage.getItem("cartItems")) ?? [],
+  shipping: JSON.parse(localStorage.getItem("shipping")) ?? Number(4.99),
   subtotal: localStorage.getItem("cartItems")
     ? calculateSubtotal(JSON.parse(localStorage.getItem("cartItems")))
     : 0,
@@ -24,10 +18,10 @@ export const initialState = {
 
 const updateLocalStorage = (cart) => {
   localStorage.setItem("cartItems", JSON.stringify(cart));
-  localStorage.setItem("subtotal", calculateSubtotal(cart));
+  localStorage.setItem("subtotal", JSON.stringify(calculateSubtotal(cart)));
 };
 
-const cartSlice = createSlice({
+export const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
@@ -35,10 +29,10 @@ const cartSlice = createSlice({
       state.loading = true;
     },
     setError: (state, { payload }) => {
-      state.loading = false;
       state.error = payload;
+      state.loading = false;
     },
-    setCartItems: (state, { payload }) => {
+    cartItemAdd: (state, { payload }) => {
       const existingItem = state.cartItems.find(
         (item) => item.id === payload.id
       );
@@ -50,11 +44,10 @@ const cartSlice = createSlice({
       } else {
         state.cartItems = [...state.cartItems, payload];
       }
-
       state.loading = false;
       state.error = null;
       updateLocalStorage(state.cartItems);
-      state.subtotal = calculateSubtotal(state.cartItems);
+      state.subtotal = Number(calculateSubtotal(state.cartItems));
     },
     cartItemRemoval: (state, { payload }) => {
       state.cartItems = [...state.cartItems].filter(
@@ -68,36 +61,28 @@ const cartSlice = createSlice({
     setShippingCosts: (state, { payload }) => {
       state.shipping = payload;
       localStorage.setItem("shipping", payload);
-      state.loading = false;
-      state.error = null;
     },
     clearCart: (state) => {
       localStorage.removeItem("cartItems");
-      localStorage.removeItem("subtotal");
+      localStorage.removeItem("shipping");
+      localStorage.removeItem("subTotal");
       state.cartItems = [];
       state.shipping = Number(4.99);
       state.subtotal = 0;
       state.loading = false;
       state.error = null;
     },
-    setSubtotal: (state, { payload }) => {
-      state.loading = false;
-      state.error = null;
-      state.subtotal = payload;
-    },
   },
 });
 
 export const {
-  setLoading,
   setError,
-  setCartItems,
-  clearCart,
+  setLoading,
+  cartItemAdd,
   cartItemRemoval,
   setShippingCosts,
-  setSubtotal,
+  clearCart,
 } = cartSlice.actions;
-
 export default cartSlice.reducer;
 
 export const cartSelector = (state) => state.cart;
