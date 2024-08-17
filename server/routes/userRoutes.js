@@ -2,6 +2,7 @@ import express from "express";
 import User from "../models/user.js";
 import asyncHandler from "express-async-handler";
 import jwt from "jsonwebtoken";
+import sendVerificatiomEmail from "../middleware/sendVerificatiomEmail.js";
 
 const userRoutes = express.Router();
 
@@ -52,6 +53,7 @@ const register = asyncHandler(async (req, res) => {
     password,
   });
   const newToken = generateToken(user._id);
+  sendVerificatiomEmail(newToken, email, name, user._id);
   if (user) {
     res.status(201).json({
       _id: user._id,
@@ -73,11 +75,30 @@ const register = asyncHandler(async (req, res) => {
 
 // * verificationEmail
 
+const verifyEmail = asyncHandler(async (req, res) => {
+  const tokem = req.headers.authorization.split(" ")[1];
+  try {
+    const decoded = jwt.verify(tokem, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id);
+    if (user) {
+      user.active = true;
+      await user.save();
+      res.json("Email Verified");
+      res.status(200).send("Email Verified");
+    } else {
+      res.status(404).send("User not found");
+    }
+  } catch (err) {
+    res.status(401).send("Email not verified");
+  }
+});
+
 // * passwordReset Request
 
 // * password reset
 
 userRoutes.route("/login").post(loginUser);
 userRoutes.route("/register").post(register);
+userRoutes.route("/email-verify").get(verifyEmail);
 
 export default userRoutes;
