@@ -3,6 +3,7 @@ import User from "../models/user.js";
 import asyncHandler from "express-async-handler";
 import jwt from "jsonwebtoken";
 import sendVerificatiomEmail from "../middleware/sendVerificatiomEmail.js";
+import sendPasswardResetEmail from "../middleware/sendPasswardResetEmail.js";
 
 const userRoutes = express.Router();
 
@@ -53,7 +54,7 @@ const register = asyncHandler(async (req, res) => {
     password,
   });
   const newToken = generateToken(user._id);
-  sendVerificatiomEmail(newToken, email, name, user._id);
+  sendVerificatiomEmail(newToken, email, name);
   if (user) {
     res.status(201).json({
       _id: user._id,
@@ -95,10 +96,48 @@ const verifyEmail = asyncHandler(async (req, res) => {
 
 // * passwordReset Request
 
+const passwordResetRequest = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (user) {
+      const newToken = generateToken(user._id);
+      sendPasswardResetEmail(newToken, user.email, user.name);
+      res.status(200).send(`We have sent a recovery email to ${email}`);
+    } else {
+      res.status(404).send("User not found");
+    }
+  } catch (err) {
+    res
+      .status(400)
+      .send(` There is no account with such email address ${err.message}`);
+  }
+});
+
 // * password reset
+
+const passwordReset = asyncHandler(async (req, res) => {
+  const { password } = req.body;
+  const tokem = req.headers.authorization.split(" ")[1];
+  try {
+    const decoded = jwt.verify(tokem, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id);
+    if (user) {
+      user.password = password;
+      await user.save();
+      res.status(200).send("Password reset success");
+    } else {
+      res.status(404).send("User not found");
+    }
+  } catch (err) {
+    res.status(401).send("Password reset failed");
+  }
+});
 
 userRoutes.route("/login").post(loginUser);
 userRoutes.route("/register").post(register);
 userRoutes.route("/email-verify").get(verifyEmail);
+userRoutes.route("/password-reset-request").post(passwordResetRequest);
+userRoutes.route("/password-reset").put(passwordReset);
 
 export default userRoutes;
