@@ -1,7 +1,7 @@
 import { Box, Button, Input, Stack, Text } from "@chakra-ui/react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { sendResetEmail } from "../redux/actions/userActions";
+import { sendResetEmail } from "../redux/actions/userAction";
 
 const PasswordForgottenForm = () => {
   const dispatch = useDispatch();
