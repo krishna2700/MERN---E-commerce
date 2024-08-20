@@ -81,7 +81,7 @@ export const verifyEmail = (token) => async (dispatch) => {
       },
     };
 
-    await axios.get(`/api/users/verify-email`, config);
+    await axios.get(`/api/users/email-verify`, config);
 
     dispatch(verificationEmail());
     const userInfo = JSON.parse(localStorage.getItem("userInfo"));

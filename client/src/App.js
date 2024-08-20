@@ -7,6 +7,7 @@ import ProductScreen from "./screens/ProductScreen";
 import CartScreen from "./screens/CartScreen";
 import Footer from "./components/Footer";
 import LoginScreen from "./screens/LoginScreen";
+import EmailVerificationScreen from "./screens/EmailVerificationScreen";
 
 function App() {
   return (
@@ -20,6 +21,10 @@ function App() {
             <Route path="/product/:id" element={<Product />} />
             <Route path="/cart" element={<CartScreen />} />
             <Route path="/login" element={<LoginScreen />} />
+            <Route
+              path="/email-verify/:token"
+              element={<EmailVerificationScreen />}
+            />
           </Routes>
         </main>
         <Footer />
