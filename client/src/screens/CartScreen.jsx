@@ -21,6 +21,7 @@ import OrderSummary from "../components/OrderSummary";
 const CartScreen = () => {
   const { loading, error, cartItems } = useSelector((state) => state.cart);
 
+  //  TODO
   // const getHeadingContent = () =>
   //   cartItems.length === 1 ? "(1 Item)" : `(${cartItems.length} Items)`;
 
