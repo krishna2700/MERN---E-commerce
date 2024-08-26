@@ -138,7 +138,7 @@ export const resetPassword = (password, token) => async (dispatch) => {
       },
     };
 
-    const { data, status } = await axios.post(
+    const { data, status } = await axios.put(
       `/api/users/password-reset`,
       { password },
       config

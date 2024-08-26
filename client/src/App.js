@@ -1,13 +1,14 @@
 import { ChakraProvider } from "@chakra-ui/react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import Footer from "./components/Footer";
 import Header from "./components/Header";
+import CartScreen from "./screens/CartScreen";
+import EmailVerificationScreen from "./screens/EmailVerificationScreen";
 import LandingScreen from "./screens/LandingScreen";
+import LoginScreen from "./screens/LoginScreen";
+import PasswordResetScreen from "./screens/PasswordResetScreen";
 import Product from "./screens/Product";
 import ProductScreen from "./screens/ProductScreen";
-import CartScreen from "./screens/CartScreen";
-import Footer from "./components/Footer";
-import LoginScreen from "./screens/LoginScreen";
-import EmailVerificationScreen from "./screens/EmailVerificationScreen";
 import RegistrationScreen from "./screens/RegistrationScreen";
 
 function App() {
@@ -26,6 +27,10 @@ function App() {
             <Route
               path="/email-verify/:token"
               element={<EmailVerificationScreen />}
+            />
+            <Route
+              path="/password-reset/:token"
+              element={<PasswordResetScreen />}
             />
           </Routes>
         </main>

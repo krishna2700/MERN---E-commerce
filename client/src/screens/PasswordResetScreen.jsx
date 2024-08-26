@@ -21,7 +21,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link as ReactLink, useParams } from "react-router-dom";
 import * as Yup from "yup";
 import PasswordField from "../components/PasswordField";
-import { resetPassword, resetState } from "../redux/actions/userActions";
+import { resetPassword, resetState } from "../redux/actions/userAction";
 
 const PasswordResetScreen = () => {
   const { token } = useParams();
