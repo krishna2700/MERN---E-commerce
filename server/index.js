@@ -16,7 +16,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/users", userRoutes);
 
 app.get("/api/config/google", (req, res) => {
-  res.send(process.env.GOOGLE_API_KEY);
+  res.send(process.env.GOOGLE_CLIENT_ID);
 });
 
 const PORT = 3690;
