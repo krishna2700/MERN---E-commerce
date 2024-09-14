@@ -1,30 +1,33 @@
-import dotenv from "dotenv";
-import express from "express";
-import cors from "cors";
-import connectRoDatabase from "./db.js";
-// Routes
-import productRoutes from "./routes/productRoutes.js";
-import userRoutes from "./routes/userRoutes.js";
-
+import dotenv from 'dotenv';
 dotenv.config();
-connectRoDatabase();
+import connectToDatabase from './db.js';
+import express from 'express';
+import cors from 'cors';
+
+// Routes
+import productRoutes from './routes/productRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+import stripeRoute from './routes/stripeRoute.js';
+import orderRoutes from './routes/orderRoutes.js';
+
+connectToDatabase();
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-app.use("/api/products", productRoutes);
-app.use("/api/users", userRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/checkout', stripeRoute);
+app.use('/api/orders', orderRoutes);
 
-app.get("/api/config/google", (req, res) => {
-  res.send(process.env.GOOGLE_CLIENT_ID);
+app.get('/api/config/google', (req, res) => res.send(process.env.GOOGLE_CLIENT_ID));
+
+const port = 5000;
+
+app.get('/', (req, res) => {
+	res.send('Api is running...');
 });
 
-const PORT = 3690;
-
-app.get("/", (req, res) => {
-  res.send("Api is running");
-});
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+app.listen(port, () => {
+	console.log(`Server runs on port ${port}`);
 });

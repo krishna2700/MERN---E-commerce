@@ -1,61 +1,64 @@
 import express from "express";
-import User from "../models/user.js";
+import User from "../models/User.js";
 import asyncHandler from "express-async-handler";
 import jwt from "jsonwebtoken";
-import sendVerificatiomEmail from "../middleware/sendVerificatiomEmail.js";
-import sendPasswardResetEmail from "../middleware/sendPasswardResetEmail.js";
-import { protectRoute } from "../middleware/authMiddleware.js";
+import { sendVerificationEmail } from "../middleware/sendVerificationEmail.js";
+import { sendPasswordResetEmail } from "../middleware/sendPasswordResetEmail.js";
+import { admin, protectRoute } from "../middleware/authMiddleware.js";
+import Order from "../models/Order.js";
 
 const userRoutes = express.Router();
 
-// TODO: redifine expiresIn
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: "60d",
-  });
+//TODO: redefine expiresIn
+const genToken = (id) => {
+  return jwt.sign({ id }, process.env.TOKEN_SECRET, { expiresIn: "60d" });
 };
 
-// * login
-
+// login
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
-  if (user && (await user.matchPassword(password))) {
-    user.firstLogin;
+
+  if (user && (await user.matchPasswords(password))) {
+    user.firstLogin = false;
     await user.save();
     res.json({
       _id: user._id,
       name: user.name,
       email: user.email,
       googleImage: user.googleImage,
-      googleId: user.googleId,
+      goodleId: user.googleId,
       isAdmin: user.isAdmin,
-      token: generateToken(user._id),
+      token: genToken(user._id),
       active: user.active,
       firstLogin: user.firstLogin,
-      createdAt: user.createdAt,
+      created: user.createdAt,
     });
   } else {
-    res.status(401);
-    throw new Error("Invalid email or password");
+    res.status(401).send("Invalid Email or Password.");
+    throw new Error("User not found.");
   }
 });
 
-// * register
-const register = asyncHandler(async (req, res) => {
+// register
+const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
-  const userExist = await User.findOne({ email });
 
-  if (userExist) {
-    res.status(400).send("User already exists");
+  const userExists = await User.findOne({ email });
+  if (userExists) {
+    res.status(400).send("We already have an account with that email address.");
   }
+
   const user = await User.create({
     name,
     email,
     password,
   });
-  const newToken = generateToken(user._id);
-  sendVerificatiomEmail(newToken, email, name);
+
+  const newToken = genToken(user._id);
+
+  sendVerificationEmail(newToken, email, name);
+
   if (user) {
     res.status(201).json({
       _id: user._id,
@@ -63,20 +66,21 @@ const register = asyncHandler(async (req, res) => {
       email: user.email,
       googleImage: user.googleImage,
       googleId: user.googleId,
+      firstLogin: user.firstLogin,
       isAdmin: user.isAdmin,
       token: newToken,
       active: user.active,
-      firstLogin: user.firstLogin,
       createdAt: user.createdAt,
     });
   } else {
-    res.status(400).send("We Could not register your account");
-    throw new Error("Invalid user data");
+    res.status(400).send("We could not register you.");
+    throw new Error(
+      "Something went wrong. Please check your information and try again."
+    );
   }
 });
 
-// * verificationEmail
-
+// verify email
 const verifyEmail = asyncHandler(async (req, res) => {
   const user = req.user;
   user.active = true;
@@ -86,48 +90,41 @@ const verifyEmail = asyncHandler(async (req, res) => {
   );
 });
 
-// * passwordReset Request
-
+// password reset request
 const passwordResetRequest = asyncHandler(async (req, res) => {
   const { email } = req.body;
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: email });
     if (user) {
-      const newToken = generateToken(user._id);
-      sendPasswardResetEmail(newToken, user.email, user.name);
-      res.status(200).send(`We have sent a recovery email to ${email}`);
-    } else {
-      res.status(404).send("User not found");
+      const newToken = genToken(user._id);
+      sendPasswordResetEmail(newToken, user.email, user.name);
+      res.status(200).send(`We have send you a recover email to ${email}`);
     }
-  } catch (err) {
-    res
-      .status(400)
-      .send(` There is no account with such email address ${err.message}`);
+  } catch (error) {
+    res.status(401).send("There is not account with such an email address");
   }
 });
 
-// * password reset
-
+// password reset
 const passwordReset = asyncHandler(async (req, res) => {
-  const { password } = req.body;
-  const tokem = req.headers.authorization.split(" ")[1];
+  const token = req.headers.authorization.split(" ")[1];
   try {
-    const decoded = jwt.verify(tokem, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
     const user = await User.findById(decoded.id);
+
     if (user) {
-      user.password = password;
+      user.password = req.body.password;
       await user.save();
-      res.status(200).send("Password reset success");
+      res.json("Your password has been updated successfully.");
     } else {
-      res.status(404).send("User not found");
+      res.status(404).send("User not found.");
     }
-  } catch (err) {
-    res.status(401).send("Password reset failed");
+  } catch (error) {
+    res.status(401).send("Password reset failed.");
   }
 });
 
-// * Google Login
-
+//google login
 const googleLogin = asyncHandler(async (req, res) => {
   const { googleId, email, name, googleImage } = req.body;
   console.log(googleId, email, name, googleImage);
@@ -159,7 +156,7 @@ const googleLogin = asyncHandler(async (req, res) => {
 
       const newToken = genToken(newUser._id);
 
-      sendVerificatiomEmail(newToken, newUser.email, newUser.name, newUser._id);
+      sendVerificationEmail(newToken, newUser.email, newUser.name, newUser._id);
       res.json({
         _id: newUser._id,
         name: newUser.name,
@@ -178,11 +175,39 @@ const googleLogin = asyncHandler(async (req, res) => {
   }
 });
 
+const getUserOrders = asyncHandler(async (req, res) => {
+  const orders = await Order.find({ user: req.params.id });
+  if (orders) {
+    res.json(orders);
+  } else {
+    res.status(404);
+    throw new Error("No Orders found.");
+  }
+});
+
+const getUsers = asyncHandler(async (req, res) => {
+  const users = await User.find({});
+  res.json(users);
+});
+
+const deleteUser = asyncHandler(async (req, res) => {
+  try {
+    const user = await User.findByIdAndRemove(req.params.id);
+    res.json(user);
+  } catch (error) {
+    res.status(404);
+    throw new Error("This user could not be found.");
+  }
+});
+
 userRoutes.route("/login").post(loginUser);
-userRoutes.route("/register").post(register);
-userRoutes.route("/email-verify").get(protectRoute, verifyEmail);
+userRoutes.route("/register").post(registerUser);
+userRoutes.route("/verify-email").get(protectRoute, verifyEmail);
 userRoutes.route("/password-reset-request").post(passwordResetRequest);
-userRoutes.route("/password-reset").put(passwordReset);
+userRoutes.route("/password-reset").post(protectRoute, passwordReset);
 userRoutes.route("/google-login").post(googleLogin);
+userRoutes.route("/:id").get(protectRoute, getUserOrders);
+userRoutes.route("/").get(protectRoute, admin, getUsers);
+userRoutes.route("/:id").delete(protectRoute, admin, deleteUser);
 
 export default userRoutes;

@@ -8,7 +8,7 @@ import {
   clearCart,
 } from "../slices/cart";
 
-export const addCartItems = (id, qty) => async (dispatch) => {
+export const addCartItem = (id, qty) => async (dispatch) => {
   dispatch(setLoading(true));
   try {
     const { data } = await axios.get(`/api/products/${id}`);
